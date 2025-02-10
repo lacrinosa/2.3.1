@@ -14,12 +14,11 @@ import web.service.UserService;
 @RequestMapping("/users")
 public class UsersController {
 
-	private UserService userService;
+	private final UserService userService;
 
 	@Autowired
-	public UserService setUserService(UserService userService) {
+	public UsersController(UserService userService) {
 		this.userService = userService;
-		return userService;
 	}
 
 	@GetMapping
@@ -34,36 +33,23 @@ public class UsersController {
 	}
 
 	@PostMapping("/add")
-	public String addUser(
-			@RequestParam("name") String name,
-			@RequestParam("surname") String surname) {
-
-		User user = new User(name, surname);
-		userService.addUser(user);
-
+	public String addUser(@RequestParam("name") String name,
+						  @RequestParam("surname") String surname) {
+		userService.addUser(name, surname);
 		return "redirect:/users";
 	}
 
 	@GetMapping("/edit")
 	public String showEditForm(@RequestParam("id") Long id, Model model) {
-		User user = userService.getUser(id);
-		model.addAttribute("user", user);
+		model.addAttribute("user", userService.getUser(id));
 		return "editUser";
 	}
 
 	@PostMapping("/update")
-	public String updateUser(
-			@RequestParam("id") Long id,
-			@RequestParam("name") String name,
-			@RequestParam("surname") String surname) {
-
-		User user = userService.getUser(id);
-		if (user != null) {
-			user.setName(name);
-			user.setSurname(surname);
-			userService.updateUser(user);
-		}
-
+	public String updateUser(@RequestParam("id") Long id,
+							 @RequestParam("name") String name,
+							 @RequestParam("surname") String surname) {
+		userService.updateUser(id, name, surname);
 		return "redirect:/users";
 	}
 
